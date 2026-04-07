@@ -7,9 +7,10 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps {
-                git 'https://github.com/tany109043/jenk.git'
-            }
+    steps {
+        git branch: 'main', url: 'https://github.com/tany109043/jenk.git'
+    }
+}
         }
 
         stage('Build & Test') {
