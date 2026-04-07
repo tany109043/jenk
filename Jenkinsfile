@@ -22,7 +22,7 @@ pipeline {
             steps {
                 publishHTML([
                     reportDir: 'reports',
-                    reportFiles: 'extent-report.html',
+                    reportFiles: 'ExtentReport.html',
                     reportName: 'Test Report',
                     keepAll: true,
                     alwaysLinkToLastBuild: true,
