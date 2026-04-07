@@ -11,6 +11,7 @@ import utils.ExcelReader;
 import java.util.Map;
 
 public class LoginSteps {
+
     private static final String TEST_DATA_FILE = "testdata/demoqa-login-data-simple.xlsx";
 
     private LoginPage loginPage;
@@ -25,33 +26,50 @@ public class LoginSteps {
     @When("the user logs in with row {int} from sheet {string}")
     public void theUserLogsInWithRowFromSheet(int rowNumber, String sheetName) {
         testData = ExcelReader.getRowData(TEST_DATA_FILE, sheetName, rowNumber);
-        loginPage.login(testData.getOrDefault("username", ""), testData.getOrDefault("password", ""));
+
+        System.out.println("DEBUG DATA: " + testData);  // 🔥 IMPORTANT
+
+        loginPage.login(
+                testData.getOrDefault("username", "").trim(),
+                testData.getOrDefault("password", "").trim()
+        );
     }
 
     @Then("the login result should match the Excel data")
     public void theLoginResultShouldMatchTheExcelData() {
-        String expectedResult = testData.getOrDefault("result", "").trim();
 
-        if ("success".equalsIgnoreCase(expectedResult)) {
-            Assert.assertTrue(loginPage.isLoginSuccessful(), "Expected the login to succeed.");
+        String expectedResult = testData.getOrDefault("result", "").trim().toLowerCase();
+
+        System.out.println("EXPECTED RESULT: " + expectedResult); // 🔥 DEBUG
+
+        if (expectedResult.equals("success")) {
+
+            Assert.assertTrue(
+                    loginPage.isLoginSuccessful(),
+                    "Expected the login to succeed."
+            );
+
             Assert.assertEquals(
-                    loginPage.getLoggedInUsername(),
-                    testData.getOrDefault("username", ""),
+                    loginPage.getLoggedInUsername().trim(),
+                    testData.getOrDefault("username", "").trim(),
                     "Logged in username did not match."
             );
-            return;
-        }
 
-        if ("fail".equalsIgnoreCase(expectedResult) || "failure".equalsIgnoreCase(expectedResult)) {
-            Assert.assertFalse(loginPage.isLoginSuccessful(), "Expected the login to fail.");
+        } else if (expectedResult.equals("fail") || expectedResult.equals("failure")) {
+
+            Assert.assertFalse(
+                    loginPage.isLoginSuccessful(),
+                    "Expected the login to fail."
+            );
+
             Assert.assertEquals(
-                    loginPage.getErrorMessage(),
+                    loginPage.getErrorMessage().trim(),
                     "Invalid username or password!",
                     "Failure message did not match."
             );
-            return;
-        }
 
-        throw new IllegalArgumentException("Unsupported expectedResult value: " + expectedResult);
+        } else {
+            throw new IllegalArgumentException("Unsupported expectedResult value: " + expectedResult);
+        }
     }
 }
