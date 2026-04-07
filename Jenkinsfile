@@ -7,15 +7,20 @@ pipeline {
 
     stages {
         stage('Checkout') {
-    steps {
-        git branch: 'main', url: 'https://github.com/tany109043/jenk.git'
-    }
-}
+            steps {
+                git branch: 'main', url: 'https://github.com/tany109043/jenk.git'
+            }
         }
 
-        stage('Build & Test') {
+        stage('Build') {
             steps {
-                bat 'mvn clean test'
+                bat 'mvn clean compile'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                bat 'mvn test'
             }
         }
 
