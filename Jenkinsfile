@@ -2,16 +2,10 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven'
+        maven 'Maven3'
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/tany109043/jenk.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 bat 'mvn clean compile'
@@ -20,7 +14,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                bat 'mvn test || exit 0'
+                bat 'mvn test'
             }
         }
 
@@ -29,9 +23,21 @@ pipeline {
                 publishHTML([
                     reportDir: 'reports',
                     reportFiles: 'extent-report.html',
-                    reportName: 'Test Report'
+                    reportName: 'Test Report',
+                    keepAll: true,
+                    alwaysLinkToLastBuild: true,
+                    allowMissing: true   // ✅ IMPORTANT
                 ])
             }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build Successful ✅'
+        }
+        failure {
+            echo 'Build Failed ❌'
         }
     }
 }
